@@ -13,13 +13,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        
+    - name: Create missing solution file
+      run: |
+        if [ -z "$(find . -maxdepth 2 -name '*.sln')" ]; then
+          echo "No solution file found. Generating one..."
+          dotnet new sln -n AppSolution
+          for proj in $(find . -name "*.csproj"); do
+            dotnet sln AppSolution.sln add "$proj"
+          done
+        else
+          echo "Solution file already exists."
+        fi
+        
     - name: Restore dependencies
-      run: dotnet restore YourSolutionName.sln
+      run: dotnet restore
+      
     - name: Build
-      run: dotnet build YourSolutionName.sln --no-restore
+      run: dotnet build --no-restore
+      
     - name: Test
-      run: dotnet test YourSolutionName.sln --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal
