@@ -1,0 +1,23 @@
+package Aztec::Client;
+use strict;
+use warnings;
+use LWP::UserAgent;
+use JSON qw(decode_json);
+
+sub new {
+    my ($class, %args) = @_;
+    my $self = {
+        base_url => $args{base_url} || 'https://localhost:8080',
+        ua       => LWP::UserAgent->new,
+    };
+    return bless $self, $class;
+}
+
+sub glyph_info {
+    my ($self, $glyph) = @_;
+    my $res = $self->{ua}->get("$self->{base_url}/glyph/$glyph");
+    die $res->status_line unless $res->is_success;
+    return decode_json($res->decoded_content);
+}
+
+1;
