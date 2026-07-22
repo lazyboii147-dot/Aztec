@@ -1,0 +1,6 @@
+Run:
+
+bash
+cd tools
+cargo run --bin schema_export
+You now have schema.json as a single source of truth.
